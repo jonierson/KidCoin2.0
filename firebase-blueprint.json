@@ -1,0 +1,157 @@
+{
+  "entities": {
+    "Family": {
+      "title": "Family",
+      "description": "Represents a family account with conversion rates and parent PIN.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerUid": { "type": "string" },
+        "parentPin": { "type": "string" },
+        "members": { "type": "array" },
+        "createdAt": { "type": "string" },
+        "conversionRate": { "type": "number" },
+        "maxDailyEarn": { "type": "number" },
+        "maxMonthlyEarn": { "type": "number" }
+      },
+      "required": ["id", "parentPin"]
+    },
+    "Child": {
+      "title": "Child",
+      "description": "Represents a child profile in a family.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "familyId": { "type": "string" },
+        "name": { "type": "string" },
+        "themeColor": { "type": "string" },
+        "balance": { "type": "number" },
+        "level": { "type": "number" },
+        "points": { "type": "number" },
+        "monthlyGoal": { "type": "number" },
+        "avatarUrl": { "type": "string" },
+        "avatarId": { "type": "string" },
+        "pin": { "type": "string" },
+        "maxDailyEarn": { "type": "number" },
+        "maxMonthlyEarn": { "type": "number" }
+      },
+      "required": ["id", "familyId", "name", "balance"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "Represents a positive task or negative penalty.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "familyId": { "type": "string" },
+        "name": { "type": "string" },
+        "value": { "type": "number" },
+        "category": { "type": "string" },
+        "type": { "type": "string" },
+        "level": { "type": "string" },
+        "recoverable": { "type": "boolean" }
+      },
+      "required": ["id", "familyId", "name", "value", "type"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Represents a coin reward, penalty, or redemption.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "childId": { "type": "string" },
+        "familyId": { "type": "string" },
+        "amount": { "type": "number" },
+        "type": { "type": "string" },
+        "description": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "isRecoverable": { "type": "boolean" },
+        "recovered": { "type": "boolean" },
+        "taskId": { "type": "string" }
+      },
+      "required": ["id", "childId", "familyId", "amount", "type"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "Represents a notification for a child.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "childId": { "type": "string" },
+        "familyId": { "type": "string" },
+        "message": { "type": "string" },
+        "type": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "read": { "type": "boolean" },
+        "amount": { "type": "number" }
+      },
+      "required": ["id", "childId", "familyId", "message"]
+    },
+    "MonthlyStatement": {
+      "title": "MonthlyStatement",
+      "description": "Represents a monthly financial closing statement.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "childId": { "type": "string" },
+        "familyId": { "type": "string" },
+        "month": { "type": "number" },
+        "year": { "type": "number" },
+        "totalCoins": { "type": "number" },
+        "totalBrl": { "type": "number" },
+        "closingDate": { "type": "string" },
+        "paidOut": { "type": "boolean" }
+      },
+      "required": ["id", "childId", "familyId", "totalCoins", "totalBrl"]
+    },
+    "ValidationRequest": {
+      "title": "ValidationRequest",
+      "description": "Represents a child's task completion validation request to parents.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "childId": { "type": "string" },
+        "familyId": { "type": "string" },
+        "taskId": { "type": "string" },
+        "taskName": { "type": "string" },
+        "taskValue": { "type": "number" },
+        "requestedAt": { "type": "string" },
+        "status": { "type": "string" },
+        "reviewedAt": { "type": "string" },
+        "reviewedBy": { "type": "string" },
+        "rejectionReason": { "type": "string" }
+      },
+      "required": ["id", "childId", "familyId", "taskName", "requestedAt", "status"]
+    }
+  },
+  "firestore": {
+    "/families/{familyId}": {
+      "schema": "Family",
+      "description": "Family account configuration"
+    },
+    "/children/{childId}": {
+      "schema": "Child",
+      "description": "Child profile records"
+    },
+    "/tasks/{taskId}": {
+      "schema": "Task",
+      "description": "Task and penalty catalog"
+    },
+    "/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Coin transactions and balance adjustments"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "Notifications sent to kids"
+    },
+    "/monthlyStatements/{statementId}": {
+      "schema": "MonthlyStatement",
+      "description": "Monthly closing statements"
+    },
+    "/validationRequests/{requestId}": {
+      "schema": "ValidationRequest",
+      "description": "Task validation requests from children"
+    }
+  }
+}

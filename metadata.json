@@ -1,0 +1,6 @@
+{
+  "name": "KidCoin",
+  "description": "Plataforma divertida de educação financeira infantil com tarefas, moedas virtuais, metas e extrato para a família.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
