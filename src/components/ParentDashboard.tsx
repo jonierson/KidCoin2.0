@@ -169,7 +169,7 @@ export const ParentDashboard: React.FC = () => {
   const [taskName, setTaskName] = useState('');
   const [taskType, setTaskType] = useState<TaskType>('positive');
   const [taskValue, setTaskValue] = useState<number>(3);
-  const [taskCategorySelect, setTaskCategorySelect] = useState('Organização');
+  const [taskCategorySelect, setTaskCategorySelect] = useState('Responsabilidades Domésticas');
   const [customCategoryInput, setCustomCategoryInput] = useState('');
   const [taskLevel, setTaskLevel] = useState<TaskLevel>('médio');
   const [taskRecoverable, setTaskRecoverable] = useState(true);
@@ -179,7 +179,7 @@ export const ParentDashboard: React.FC = () => {
   const [editTaskName, setEditTaskName] = useState('');
   const [editTaskType, setEditTaskType] = useState<TaskType>('positive');
   const [editTaskValue, setEditTaskValue] = useState<number>(3);
-  const [editTaskCategorySelect, setEditTaskCategorySelect] = useState('Organização');
+  const [editTaskCategorySelect, setEditTaskCategorySelect] = useState('Responsabilidades Domésticas');
   const [editCustomCategoryInput, setEditCustomCategoryInput] = useState('');
   const [editTaskLevel, setEditTaskLevel] = useState<TaskLevel>('médio');
   const [editTaskRecoverable, setEditTaskRecoverable] = useState(true);
@@ -187,15 +187,13 @@ export const ParentDashboard: React.FC = () => {
   // Available categories list computed from standard list + existing tasks
   const availableCategories = React.useMemo(() => {
     const defaultCategories = [
-      'Organização',
-      'Estudos',
-      'Saúde & Higiene',
-      'Comportamento',
-      'Família',
-      'Responsabilidade',
-      'Regras de Casa',
-      'Valores',
-      'Autonomia',
+      'Responsabilidades Domésticas',
+      'Estudos e Desenvolvimento Intelectual',
+      'Hábitos Saudáveis',
+      'Comportamento e Atitudes',
+      'Autonomia e Responsabilidade Pessoal',
+      'Criatividade e Lazer Produtivo',
+      'Desafios e Missões Especiais',
     ];
     const fromTasks = tasks.map((t) => t.category).filter(Boolean);
     return Array.from(new Set([...defaultCategories, ...fromTasks]));
@@ -1334,7 +1332,7 @@ export const ParentDashboard: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className={taskType === 'negative' ? 'grid grid-cols-1 sm:grid-cols-2 gap-3' : ''}>
                 <div>
                   <label className="text-xs font-bold text-slate-700 block mb-1">Categoria</label>
                   <select
@@ -1368,18 +1366,20 @@ export const ParentDashboard: React.FC = () => {
                   )}
                 </div>
 
-                <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">Gravidade / Nível</label>
-                  <select
-                    value={taskLevel}
-                    onChange={(e) => setTaskLevel(e.target.value as TaskLevel)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200/80 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
-                  >
-                    <option value="leve">Leve</option>
-                    <option value="médio">Médio</option>
-                    <option value="grave">Grave</option>
-                  </select>
-                </div>
+                {taskType === 'negative' && (
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">Gravidade / Nível</label>
+                    <select
+                      value={taskLevel}
+                      onChange={(e) => setTaskLevel(e.target.value as TaskLevel)}
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200/80 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
+                    >
+                      <option value="leve">Leve</option>
+                      <option value="médio">Médio</option>
+                      <option value="grave">Grave</option>
+                    </select>
+                  </div>
+                )}
               </div>
 
               {taskType === 'negative' && (
@@ -1475,7 +1475,7 @@ export const ParentDashboard: React.FC = () => {
                       </div>
                       <div className="font-bold text-slate-900 text-sm mb-1">{task.name}</div>
                       <div className="text-[11px] text-slate-500 flex items-center gap-1.5 flex-wrap">
-                        <span>Nível: {task.level}</span>
+                        {!isPos && <span>Gravidade: {task.level || 'leve'}</span>}
                         {!isPos && (
                           task.recoverable ? (
                             <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
@@ -1962,7 +1962,7 @@ export const ParentDashboard: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className={editTaskType === 'negative' ? 'grid grid-cols-1 sm:grid-cols-2 gap-3' : ''}>
                 <div>
                   <label className="text-xs font-bold text-slate-700 block mb-1">Categoria</label>
                   <select
@@ -1995,18 +1995,20 @@ export const ParentDashboard: React.FC = () => {
                   )}
                 </div>
 
-                <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">Gravidade / Nível</label>
-                  <select
-                    value={editTaskLevel}
-                    onChange={(e) => setEditTaskLevel(e.target.value as TaskLevel)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
-                  >
-                    <option value="leve">Leve</option>
-                    <option value="médio">Médio</option>
-                    <option value="grave">Grave</option>
-                  </select>
-                </div>
+                {editTaskType === 'negative' && (
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">Gravidade / Nível</label>
+                    <select
+                      value={editTaskLevel}
+                      onChange={(e) => setEditTaskLevel(e.target.value as TaskLevel)}
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
+                    >
+                      <option value="leve">Leve</option>
+                      <option value="médio">Médio</option>
+                      <option value="grave">Grave</option>
+                    </select>
+                  </div>
+                )}
               </div>
 
               {editTaskType === 'negative' && (

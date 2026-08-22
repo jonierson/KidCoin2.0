@@ -61,19 +61,19 @@ export const MONSTER_AVATARS: AvatarOption[] = [
 
 export const DEFAULT_TASKS = [
   // Tarefas Positivas
-  { name: 'Arrumar a cama ao acordar', type: 'positive', value: 2, category: 'Organização', level: 'leve', recoverable: false },
-  { name: 'Fazer o dever de casa sem reclamar', type: 'positive', value: 5, category: 'Estudos', level: 'médio', recoverable: false },
-  { name: 'Guardar os brinquedos após brincar', type: 'positive', value: 3, category: 'Organização', level: 'leve', recoverable: false },
-  { name: 'Escovar os dentes após as refeições', type: 'positive', value: 2, category: 'Saúde & Higiene', level: 'leve', recoverable: false },
-  { name: 'Ajudar a colocar/tirar a mesa do jantar', type: 'positive', value: 4, category: 'Família', level: 'médio', recoverable: false },
-  { name: 'Ler 15 minutos de um livro', type: 'positive', value: 5, category: 'Estudos', level: 'médio', recoverable: false },
-  { name: 'Alimentar o pet ou cuidar da planta', type: 'positive', value: 3, category: 'Responsabilidade', level: 'leve', recoverable: false },
-  { name: 'Comer frutas e vegetais na refeição', type: 'positive', value: 3, category: 'Saúde & Higiene', level: 'leve', recoverable: false },
+  { name: 'Arrumar a cama ao acordar', type: 'positive', value: 2, category: 'Responsabilidades Domésticas', level: 'leve', recoverable: false },
+  { name: 'Fazer o dever de casa sem reclamar', type: 'positive', value: 5, category: 'Estudos e Desenvolvimento Intelectual', level: 'médio', recoverable: false },
+  { name: 'Guardar os brinquedos após brincar', type: 'positive', value: 3, category: 'Responsabilidades Domésticas', level: 'leve', recoverable: false },
+  { name: 'Escovar os dentes após as refeições', type: 'positive', value: 2, category: 'Hábitos Saudáveis', level: 'leve', recoverable: false },
+  { name: 'Ajudar a colocar/tirar a mesa do jantar', type: 'positive', value: 4, category: 'Responsabilidades Domésticas', level: 'médio', recoverable: false },
+  { name: 'Ler 15 minutos de um livro', type: 'positive', value: 5, category: 'Estudos e Desenvolvimento Intelectual', level: 'médio', recoverable: false },
+  { name: 'Alimentar o pet ou cuidar da planta', type: 'positive', value: 3, category: 'Autonomia e Responsabilidade Pessoal', level: 'leve', recoverable: false },
+  { name: 'Comer frutas e vegetais na refeição', type: 'positive', value: 3, category: 'Hábitos Saudáveis', level: 'leve', recoverable: false },
 
   // Comportamentos Negativos (Multas)
-  { name: 'Dar birra ou gritar com os pais', type: 'negative', value: 4, category: 'Comportamento', level: 'médio', recoverable: true },
-  { name: 'Não guardar o celular/videogame na hora', type: 'negative', value: 3, category: 'Regras de Casa', level: 'leve', recoverable: true },
-  { name: 'Deixar roupa suja jogada no chão', type: 'negative', value: 2, category: 'Organização', level: 'leve', recoverable: true },
-  { name: 'Responder com desrespeito ou morder/chutar', type: 'negative', value: 8, category: 'Comportamento', level: 'grave', recoverable: false },
-  { name: 'Faltar com a verdade / Mentir', type: 'negative', value: 6, category: 'Valores', level: 'grave', recoverable: false },
+  { name: 'Dar birra ou gritar com os pais', type: 'negative', value: 4, category: 'Comportamento e Atitudes', level: 'médio', recoverable: true },
+  { name: 'Não guardar o celular/videogame na hora', type: 'negative', value: 3, category: 'Autonomia e Responsabilidade Pessoal', level: 'leve', recoverable: true },
+  { name: 'Deixar roupa suja jogada no chão', type: 'negative', value: 2, category: 'Responsabilidades Domésticas', level: 'leve', recoverable: true },
+  { name: 'Responder com desrespeito ou morder/chutar', type: 'negative', value: 8, category: 'Comportamento e Atitudes', level: 'grave', recoverable: false },
+  { name: 'Faltar com a verdade / Mentir', type: 'negative', value: 6, category: 'Comportamento e Atitudes', level: 'grave', recoverable: false },
 ];
