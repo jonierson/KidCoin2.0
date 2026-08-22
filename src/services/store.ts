@@ -625,6 +625,14 @@ class KidCoinStore {
     this.notify();
   }
 
+  public updateTask(taskId: string, updates: Partial<Omit<Task, 'id' | 'familyId'>>) {
+    this.tasks = this.tasks.map((t) => (t.id === taskId ? { ...t, ...updates } : t));
+    if (this.isFirebaseConnected && db) {
+      updateDoc(doc(db, 'tasks', taskId), updates).catch(console.error);
+    }
+    this.notify();
+  }
+
   public deleteTask(taskId: string) {
     this.tasks = this.tasks.filter((t) => t.id !== taskId);
     if (this.isFirebaseConnected && db) {

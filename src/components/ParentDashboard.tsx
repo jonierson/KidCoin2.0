@@ -23,7 +23,8 @@ import {
   ShieldAlert,
   AlertTriangle,
   Sliders,
-  Gauge
+  Gauge,
+  X
 } from 'lucide-react';
 import { store } from '../services/store';
 import { Task, TaskType, TaskLevel, Child } from '../types';
@@ -172,6 +173,16 @@ export const ParentDashboard: React.FC = () => {
   const [customCategoryInput, setCustomCategoryInput] = useState('');
   const [taskLevel, setTaskLevel] = useState<TaskLevel>('médio');
   const [taskRecoverable, setTaskRecoverable] = useState(true);
+
+  // Edit Task State & Modal
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [editTaskName, setEditTaskName] = useState('');
+  const [editTaskType, setEditTaskType] = useState<TaskType>('positive');
+  const [editTaskValue, setEditTaskValue] = useState<number>(3);
+  const [editTaskCategorySelect, setEditTaskCategorySelect] = useState('Organização');
+  const [editCustomCategoryInput, setEditCustomCategoryInput] = useState('');
+  const [editTaskLevel, setEditTaskLevel] = useState<TaskLevel>('médio');
+  const [editTaskRecoverable, setEditTaskRecoverable] = useState(true);
 
   // Available categories list computed from standard list + existing tasks
   const availableCategories = React.useMemo(() => {
@@ -408,6 +419,45 @@ export const ParentDashboard: React.FC = () => {
       setTaskCategorySelect(resolvedCategory);
       setCustomCategoryInput('');
     }
+    sound.playCoin();
+  };
+
+  const handleOpenEditTask = (task: Task) => {
+    sound.playClick();
+    setEditingTask(task);
+    setEditTaskName(task.name);
+    setEditTaskType(task.type);
+    setEditTaskValue(task.value);
+    if (availableCategories.includes(task.category)) {
+      setEditTaskCategorySelect(task.category);
+      setEditCustomCategoryInput('');
+    } else {
+      setEditTaskCategorySelect('__custom__');
+      setEditCustomCategoryInput(task.category);
+    }
+    setEditTaskLevel(task.level || 'médio');
+    setEditTaskRecoverable(task.recoverable ?? true);
+  };
+
+  const handleSaveEditTask = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTask || !editTaskName.trim()) return;
+
+    const resolvedCategory =
+      editTaskCategorySelect === '__custom__'
+        ? editCustomCategoryInput.trim() || 'Geral'
+        : editTaskCategorySelect.trim() || 'Geral';
+
+    store.updateTask(editingTask.id, {
+      name: editTaskName.trim(),
+      type: editTaskType,
+      value: Math.max(1, Number(editTaskValue)),
+      category: resolvedCategory,
+      level: editTaskLevel,
+      recoverable: editTaskType === 'negative' ? editTaskRecoverable : false,
+    });
+
+    setEditingTask(null);
     sound.playCoin();
   };
 
@@ -1440,12 +1490,27 @@ export const ParentDashboard: React.FC = () => {
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => handleDeleteTaskClick(task)}
-                      className="mt-3 text-xs text-rose-600 font-bold hover:underline flex items-center gap-1"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" /> Remover
-                    </button>
+                    <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEditTask(task)}
+                        className="text-xs text-slate-700 hover:text-slate-950 font-bold flex items-center gap-1.5 px-2.5 py-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                        title="Editar configurações desta tarefa"
+                      >
+                        <Edit3 className="w-3.5 h-3.5 text-amber-600" />
+                        <span>Editar</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteTaskClick(task)}
+                        className="text-xs text-rose-600 hover:text-rose-700 font-bold flex items-center gap-1.5 px-2.5 py-1 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
+                        title="Remover esta tarefa do catálogo"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Remover</span>
+                      </button>
+                    </div>
                   </div>
                 );
               })}
@@ -1824,6 +1889,198 @@ export const ParentDashboard: React.FC = () => {
                   className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow-xs cursor-pointer"
                 >
                   Confirmar Recusa
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Task Modal */}
+      {editingTask && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5 text-amber-600">
+                <Sliders className="w-5 h-5" />
+                <div>
+                  <h3 className="font-extrabold text-slate-900 text-base">Editar Tarefa / Regra</h3>
+                  <p className="text-[11px] text-slate-500">
+                    Altere o título, valor em KidCoins, categoria e regras de validação.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setEditingTask(null)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditTask} className="space-y-4">
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">
+                  Título da Tarefa ou Comportamento
+                </label>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  placeholder="Ex: Arrumar a cama, Fazer a lição de casa..."
+                  value={editTaskName}
+                  onChange={(e) => setEditTaskName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Tipo</label>
+                  <select
+                    value={editTaskType}
+                    onChange={(e) => setEditTaskType(e.target.value as TaskType)}
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
+                  >
+                    <option value="positive">Positiva (Recompensa)</option>
+                    <option value="negative">Negativa (Multa)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Valor em KidCoins</label>
+                  <input
+                    type="number"
+                    required
+                    min={1}
+                    value={editTaskValue}
+                    onChange={(e) => setEditTaskValue(Number(e.target.value))}
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Categoria</label>
+                  <select
+                    value={editTaskCategorySelect}
+                    onChange={(e) => {
+                      setEditTaskCategorySelect(e.target.value);
+                      if (e.target.value !== '__custom__') {
+                        setEditCustomCategoryInput('');
+                      }
+                    }}
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
+                  >
+                    {availableCategories.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                    <option value="__custom__">+ Nova Categoria Personalizada...</option>
+                  </select>
+
+                  {editTaskCategorySelect === '__custom__' && (
+                    <input
+                      type="text"
+                      required
+                      placeholder="Nome da categoria..."
+                      value={editCustomCategoryInput}
+                      onChange={(e) => setEditCustomCategoryInput(e.target.value)}
+                      className="mt-2 w-full px-3 py-2 rounded-xl border border-amber-300 bg-amber-50/50 text-xs focus:outline-none focus:ring-2 focus:ring-slate-900 animate-fadeIn"
+                    />
+                  )}
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Gravidade / Nível</label>
+                  <select
+                    value={editTaskLevel}
+                    onChange={(e) => setEditTaskLevel(e.target.value as TaskLevel)}
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
+                  >
+                    <option value="leve">Leve</option>
+                    <option value="médio">Médio</option>
+                    <option value="grave">Grave</option>
+                  </select>
+                </div>
+              </div>
+
+              {editTaskType === 'negative' && (
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <RotateCcw className="w-3.5 h-3.5 text-amber-600" />
+                      Multa Recuperável?
+                    </label>
+                    <span
+                      className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                        editTaskRecoverable
+                          ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                          : 'bg-rose-100 text-rose-800 border border-rose-200'
+                      }`}
+                    >
+                      {editTaskRecoverable ? 'Sim (Recuperável)' : 'Não (Definitiva)'}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEditTaskRecoverable(true)}
+                      className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                        editTaskRecoverable
+                          ? 'bg-amber-50 border-amber-400 text-amber-950 shadow-2xs'
+                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="font-extrabold text-xs flex items-center gap-1.5 text-amber-900">
+                        <CheckCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                        <span>Sim, Recuperável</span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 mt-1 leading-tight">
+                        A criança poderá recuperar as moedas na aba de Redenção.
+                      </p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setEditTaskRecoverable(false)}
+                      className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                        !editTaskRecoverable
+                          ? 'bg-rose-50 border-rose-400 text-rose-950 shadow-2xs'
+                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="font-extrabold text-xs flex items-center gap-1.5 text-rose-900">
+                        <AlertOctagon className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                        <span>Não (Definitiva)</span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 mt-1 leading-tight">
+                        Desconto permanente sem opção de redenção posterior.
+                      </p>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingTask(null)}
+                  className="px-4 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 text-xs font-bold cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+                  Salvar Alterações
                 </button>
               </div>
             </form>
